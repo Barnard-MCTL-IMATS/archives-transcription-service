@@ -1,0 +1,27 @@
+def transcribe_gcs(gcs_uri):
+    """Asynchronously transcribes the audio file specified by the gcs_uri."""
+    from google.cloud import speech
+    from google.cloud.speech import enums
+    
+    client = speech.SpeechClient()
+    audio  = speech.types.RecognitionAudio(uri=gcs_uri)
+    config = speech.types.RecognitionConfig(
+    
+        encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
+        #sample_rate_hertz=16000,
+        #sample_rate_hertz = 96000,
+        #audio_channel_count = 2,
+        language_code='en-US')
+
+    operation = client.long_running_recognize(config, audio)
+
+    print('Waiting for operation to complete...')
+    response = operation.result()
+
+    for result in response.results:
+        # The first alternative is the most likely one for this portion.
+        print(u'Transcript: {}'.format(result.alternatives[0].transcript))
+        print('Confidence: {}'.format(result.alternatives[0].confidence))
+
+
+transcribe_gcs("path/to/flac on bucket")
