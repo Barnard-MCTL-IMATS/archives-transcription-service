@@ -1,0 +1,24 @@
+import io
+import os
+from os.path import splitext
+from pydub import AudioSegment
+
+root = os.getcwd()
+wav_dir = os.path.join(root, 'wav-files')
+wav_files = [os.path.join(wav_dir, wav) for wav in os.listdir(wav_dir)]
+
+flac_dir = os.path.join(root, 'flac-files')
+
+from pydub.utils import mediainfo
+wav_ = wav_files[0]
+info = mediainfo(wav_)
+sample_rate = int(info['sample_rate'])
+
+# Change sampling into allowable range
+audio = AudioSegment.from_file(wav_, format = "wav", frame_rate = sample_rate)
+audio = audio.set_frame_rate(16000)
+
+basename = os.path.basename(wav_)
+filename = os.path.splitext(basename)[0]
+flac_path = os.path.join(flac_dir, filename + '.flac')
+audio.export(flac_path, format = 'flac')
