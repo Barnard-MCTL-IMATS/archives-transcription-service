@@ -1,7 +1,7 @@
 # archives-transcription-service
 
 ToDo
-- comment & organize
+- organize folders 
 - write local to gcc bucket script
-- write transcription results to local script
+- move functions into seperate module
 - sentiment analysis? 
