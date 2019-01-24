@@ -60,3 +60,41 @@ def convert_to_flac(wav, flac_dir):
         return 0
     except:
         return 1
+    
+root, wav_dir, wav_files, flac_dir, transcriptions_dir = get_dirs_and_wav_files()
+
+set_google_app_credentials(root)
+
+for wav in wav_files:
+    sample_rate = get_sample_rate(wav)
+    audio = reset_sample_and_channel(wav, sample_rate)
+    convert_result = convert_to_flac(wav, flac_dir)
+    
+import os
+import pandas as pd
+
+bucket =.............
+samples = ........... # 
+
+for sample in samples:
+    '''Build Paths'''
+    sample_basename = os.path.splitext(sample)[0]
+    sample_filename = os.path.basename(sample_basename)
+    
+    csv_dir = os.path.join(transcriptions_dir, sample_filename)
+    csv_file = os.path.join(csv_dir, sample_filename + '.csv')
+    
+    '''Transcribe'''
+    gcs_uri = os.path.join(bucket, sample)
+    results = transcribe_gcs(gcs_uri).results
+    all_transcriptions = [result.alternatives[0].transcript for result in results]
+    all_confidence = [result.alternatives[0].confidence for result in results]
+    result_dict = {'transcription': all_transcriptions, 'confidence': all_confidence}
+    
+    '''Write to dir'''
+    if not os.path.exists(csv_dir):
+        os.mkdir(csv_dir)
+    
+    df = pd.DataFrame(result_dict)
+    df.to_csv(csv_file, encoding='utf-8', index=False)    
+
